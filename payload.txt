@@ -1,0 +1,24 @@
+{
+    "companyId": 643,
+    "endDate": "END_DATE",
+    "startDate": "START_DATE",
+    "menuName": "MENU_NAME",
+    "menuCode": "MENU_CODE",
+    "description": "fgdgd",
+    "menuItems": [{
+        "itemId": 2610,
+        "itemQty": 20
+    }, {
+        "itemId": 2609,
+        "itemQty": 20
+    }, {
+        "itemId": 2612,
+        "itemQty": 20
+    }, {
+        "itemId": 3291,
+        "itemQty": 20
+    }, {
+        "itemId": 2606,
+        "itemQty": 20
+    }]
+}

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+echo "$R#===================================================#" 
+echo  "       $W Welcome $HOSTNAME  " 
+echo  "       $R Project   $W= PACPLUS                     " 
+echo  "$R#==================================================#"
+
+echo -n "Enter your Options 1(Create Menu) or 2(Create Store)"
+read OPTION
+
+if [ "$OPTION" == 1 ]; then
+	echo -n "Enter the Menu Code > "
+	read MENUCODE
+	
+	echo -n "Enter the Menu Name > "
+	read MENUNAME
+	
+	#value =`readJson payload.txt menuItems` || exit 1
+	
+	VALUE=`grep -m 1 "menuItems" payload.txt | sed -r 's/^ *//;s/.*: *"//;s/",?//'`
+	
+	echo $VALUE
+	
+	
+	#curl -X POST -H "userid: 199" -H "companyid: 643" -H "Content-Type: application/json" -d "$body" "https://u2-ts5-stage.egatesoln.com/rsvr/api/menus?limit=50" 
+	
+	echo "$R#=============================================================#" 
+	echo "Menu Created with Name: " $MENUNAME "and code : " $MENUCODE
+	echo "$R#=============================================================#" 
+fi
+if [ "$OPTION" == 2 ]; then
+	echo -n "Enter starting store number(range Start point) > "
+	read COUNTER
+
+	echo -n "Enter end store number(range End point) > "
+	read ENDRANGE
+
+	if [ $((ENDRANGE - COUNTER)) -gt 20 ]; then
+		echo "Please Specify a range less than 20"
+	else
+		echo "$R#+++++++++++++++++++++++++++++++++++++++++++++++++++#" 
+		echo "You are about to create store numbers on TS5"
+		echo "$R#+++++++++++++++++++++++++++++++++++++++++++++++++++#"   
+		date="$(date +'%Y%m%d')"
+		while [[  $COUNTER -lt $ENDRANGE ]]; do 
+			body='{"storeNumber": "PACPLUS'$COUNTER'", "startDate": "'$date'", "endDate": "20870131"}' 
+			#curl -X POST -H "userid: 199" -H "companyid: 643" -H "Content-Type: application/json" -d "$body" "https://u2-ts5-stage.egatesoln.com/rsvr/api/companies/stores" 
+			echo "$R#===================================================#" 
+			echo "Store Number Created with Store Number: " $COUNTER
+			echo "$R#===================================================#" 
+			let COUNTER=COUNTER+1 
+		done
+	fi
+fi
+
+
