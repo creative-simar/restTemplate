@@ -1,0 +1,151 @@
+<%@include file="common/navigation.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+<html>
+<head>
+<title>Administrator</title>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+		
+	$(".rejectUserRequest").off("click").on("click", function(e){
+		e.preventDefault();
+		var userToRemove = $(this).attr("id");
+		  $("<div><p>The user will be removed if this request is rejected.</p><br><p>Do you wish to proceed?</p></div>").dialog({
+			autoOpen: true,
+			title: 'Reject request',
+			modal:true,
+			buttons:{
+				  Yes: function () {
+						$.ajax({
+							url: "/portal/admin/user-management/"+userToRemove,
+							type: 'DELETE',
+							success: function( data ) {
+								window.location.reload(false); 									
+							}
+						});
+						$(this).dialog("close");
+				  },
+				  No: function () {
+					  $(this).dialog("close");
+				  }
+			},
+			  close: function (event, ui) {
+				  $(this).remove();
+			  }
+		  });		
+	});
+
+
+	        $("#userSearch" ).autocomplete({
+	        	minLength: 0,
+
+				select: function(e, ui) {
+
+					$(this).val(ui.item.label);
+					$("#viewSearhUserDetail").removeClass("disabled");
+					$("#viewSearhUserDetail").off("click").on("click",function(){
+						var userDetailUrl = '/portal/admin/user-management/'+ui.item.value;
+						window.open(userDetailUrl,'_blank');
+					})
+					$("#myHidden").val(ui.item.value);
+					return false;
+				},
+                source: function( request, response ) {
+                	 if (request.term.length > 0) {
+                         $.ajax({
+                             url: "/portal/admin/user-management/"+request.term+"/search",
+                             success: function( data ) {
+     							var results = [];
+     							$.each(data.userList, function(i, user) {
+     							  //use obj.id and obj.name here, for example:
+     							  	var _user={};
+     								_user.label = user.username;
+     								_user.value=user.userid;
+     							  results.push(_user);
+     							});
+                                 response(results);
+                             }						
+                         });
+                		 
+                	 }else{
+                		 
+                		 $("#viewSearhUserDetail").addClass("disabled");
+                		 $("#viewSearhUserDetail").off("click")
+                		 $("#userSearch" ).autocomplete('close');
+                	 }
+
+                },
+            });
+
+	
+});
+</script>
+
+<body>
+
+<div class="content-box">
+
+    <h4>User management</h4>
+	<!-- <form class="form-inline">
+	  <div class="form-group search-text-button">
+	    <div class="input-group ui-widget">
+	      <div class="input-group-addon">Username</div>
+	      <input type="text" class="form-control" id="userSearch" placeholder="Enter">
+	    </div>
+	  </div>
+	  <button id="viewSearhUserDetail" type="submit" class="disabled btn btn-primary"><span id="${user.userid}" class="glyphicon glyphicon-search"></span>   Search </button>
+	</form> -->
+
+<hr>
+
+	<div class="content-box-content">
+
+<div style="display: inline-block; margin-right: 1300px;">
+            <table class="tableResults" style="position:fixed; table-layout: fixed;    word-break: normal;">	
+            	<tr>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Email Id</th>
+						<th>Companies</th>
+						<th>Roles</th>
+						<th>Updated By</th>
+						<th>Updated Date/Time</th>
+						<th>User Enabled</th>
+						<th>Options</th>							
+			    </tr>			   		
+				<c:forEach items="${users}" var="user">
+				    <tr>
+				       		<td><c:out value="${user.firstName}"/></td>
+							<td><c:out value="${user.lastName}"/></td>
+							<td style ="white-space: nowrap;"><c:out value="${user.email}"/></td>
+							<td><c:out value="${user.getCompanyList()}"/></td>
+							<td><c:out value="${user.getRoleList()}"/></td>
+							<td><c:out value="${user.regdate}"/></td>
+							<td><c:out value="${user.displayname}"/></td>							
+							<td><c:out value="${fn:toUpperCase(user.enabled)}"/></td>
+							<td>
+								<button class="btn btn-primary btn-sm">
+									<span id="${user.userid}" onclick="window.open('/portal/admin/user-management/${user.userid}','_blank');" class="glyphicon glyphicon-edit"></span>
+								</button>
+								<button class="btn btn-danger btn-sm">	
+									<span id="${user.userid}" class="glyphicon glyphicon-remove rejectUserRequest"></span>
+								</button>
+								</td>
+						
+						
+						
+						
+						
+				    </tr>
+				</c:forEach>
+				<c:if test="${empty users}">
+					<tr> <td></td></tr>
+				</c:if>
+            </table>
+            </div>
+      </div>      
+</div>
+	
+</body>
+</html>
